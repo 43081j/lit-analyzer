@@ -224,3 +224,22 @@ html\`<input step="\${myDirective("foo")}" /> \`
 
 	hasDiagnostic(t, diagnostics, "no-incompatible-type-binding");
 });
+
+tsTest("Strings are assignable to types with converters", t => {
+	const { diagnostics } = getDiagnostics(
+		[
+			makeElement({
+				properties: {
+					"complex: string[]": `{
+					converter: {
+						fromAttribute(str) { return str.split(','); },
+						toAttribute(arr) { return arr.join(','); }
+					}
+				}`
+				}
+			}),
+			'html`<my-element complex="foo,bar"></my-element>`'
+		]
+	);
+	hasNoDiagnostics(t, diagnostics);
+});
